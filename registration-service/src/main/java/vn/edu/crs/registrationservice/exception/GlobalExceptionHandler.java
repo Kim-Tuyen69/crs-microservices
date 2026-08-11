@@ -1,4 +1,4 @@
-package vn.edu.crs.courseservice.exception;
+package vn.edu.crs.registrationservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,6 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Không tìm thấy dữ liệu
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Map<String, String>>
     handleNotFound(NoSuchElementException ex) {
@@ -29,23 +28,6 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    // Lỗi dữ liệu đầu vào / trùng tên
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>>
-    handleBadRequest(IllegalArgumentException ex) {
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(
-                        Map.of(
-                                "message",
-                                ex.getMessage()
-                        )
-                );
-    }
-
-    // BUỔI 3:
-    // xử lý trường hợp môn học hết chỗ
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>>
     handleConflict(IllegalStateException ex) {
@@ -60,7 +42,6 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    // Validation
     @ExceptionHandler(
             MethodArgumentNotValidException.class
     )
@@ -74,10 +55,10 @@ public class GlobalExceptionHandler {
 
         ex.getBindingResult()
                 .getFieldErrors()
-                .forEach(fieldError ->
+                .forEach(fe ->
                         errors.put(
-                                fieldError.getField(),
-                                fieldError.getDefaultMessage()
+                                fe.getField(),
+                                fe.getDefaultMessage()
                         )
                 );
 

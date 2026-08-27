@@ -1,0 +1,435 @@
+/* =========================
+   GLOBAL
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+
+    background: #f5f7fb;
+
+    font-family:
+            Inter,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+    color: #1f2937;
+}
+
+
+/* =========================
+   PAGE
+========================= */
+
+.course-page {
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.course-container {
+    width: 100%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.course-header {
+    margin-bottom: 24px;
+}
+
+.course-title {
+    margin: 0;
+
+    font-size: 30px;
+    font-weight: 700;
+
+    color: #1d4ed8;
+}
+
+.course-subtitle {
+    margin-top: 8px;
+    margin-bottom: 0;
+
+    font-size: 14px;
+
+    color: #6b7280;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-wrapper {
+    margin-bottom: 24px;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 450px;
+
+    padding: 12px 14px;
+
+    font-size: 14px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    outline: none;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================
+   TABLE WRAPPER
+========================= */
+
+.course-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.course-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    /* Quan trọng:
+       giữ độ rộng các cột cố định */
+    table-layout: fixed;
+}
+
+
+/* =========================
+   TABLE HEADER
+========================= */
+
+.course-table thead {
+    background: #eff6ff;
+}
+
+.course-table th {
+    padding: 18px 20px;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #1e3a8a;
+
+    border-bottom: 2px solid #dbeafe;
+
+    vertical-align: middle;
+}
+
+
+/* =========================
+   TABLE BODY
+========================= */
+
+.course-table td {
+    padding: 18px 20px;
+
+    font-size: 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    vertical-align: middle;
+}
+
+.course-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.course-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.course-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+
+/* =========================
+   COLUMN WIDTH
+========================= */
+
+/*
+   Cột 1: 50%
+   Cột 2: 20%
+   Cột 3: 30%
+
+   Header và body dùng cùng width
+   nên sẽ không còn bị lệch.
+*/
+
+.course-table th:nth-child(1),
+.course-table td:nth-child(1) {
+    width: 50%;
+}
+
+.course-table th:nth-child(2),
+.course-table td:nth-child(2) {
+    width: 20%;
+}
+
+.course-table th:nth-child(3),
+.course-table td:nth-child(3) {
+    width: 30%;
+}
+
+
+/* =========================
+   COLUMN ALIGNMENT
+========================= */
+
+/* Tên môn học */
+.course-column-name,
+.course-name {
+    text-align: left;
+}
+
+/* Số tín chỉ */
+.course-column-credit,
+.course-credit {
+    text-align: center;
+}
+
+/* Số chỗ */
+.course-column-seat,
+.course-seat {
+    text-align: center;
+}
+
+
+/* =========================
+   COURSE NAME
+========================= */
+
+.course-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+
+/* =========================
+   SEAT STATUS
+========================= */
+
+.seat-normal {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.seat-full {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+
+/* =========================
+   LOAD STATES
+========================= */
+
+.status-box {
+    padding: 18px;
+
+    margin-top: 12px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+.status-loading {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.status-empty {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.status-error {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+
+/* =========================
+   RETRY BUTTON
+========================= */
+
+.retry-button {
+    margin-top: 10px;
+
+    padding: 9px 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #dc2626;
+    color: #ffffff;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.retry-button:hover {
+    background: #b91c1c;
+}
+
+
+/* =========================
+   PAGINATION
+========================= */
+
+.pagination {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 24px;
+}
+
+.pagination button {
+    min-width: 40px;
+
+    padding: 9px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    cursor: pointer;
+
+    transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+    border-color: #2563eb;
+
+    color: #2563eb;
+
+    background: #eff6ff;
+}
+
+.pagination button:disabled {
+    opacity: 0.45;
+
+    cursor: not-allowed;
+}
+
+.pagination .active-page {
+    background: #2563eb;
+
+    color: #ffffff;
+
+    border-color: #2563eb;
+
+    font-weight: 700;
+}
+
+.pagination .active-page:hover {
+    color: #ffffff;
+
+    background: #1d4ed8;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .course-page {
+        padding: 20px 12px;
+    }
+
+    .course-container {
+        padding: 20px 14px;
+    }
+
+    .course-title {
+        font-size: 24px;
+    }
+
+    .course-table th,
+    .course-table td {
+        padding: 14px 10px;
+
+        font-size: 13px;
+    }
+
+    .course-table th:nth-child(1),
+    .course-table td:nth-child(1) {
+        width: 48%;
+    }
+
+    .course-table th:nth-child(2),
+    .course-table td:nth-child(2) {
+        width: 20%;
+    }
+
+    .course-table th:nth-child(3),
+    .course-table td:nth-child(3) {
+        width: 32%;
+    }
+}

@@ -1,74 +1,89 @@
 import {
-  useEffect,
-  useState
+    useState
 } from 'react';
 
 import {
-  getCourses
-} from './api/courseApi';
+    useCourses
+} from './api/useCourses';
 
-import type {
-  Course
-} from './types/course';
+import SearchBox
+    from './components/SearchBox';
+
+import CourseList
+    from './components/CourseList';
+
+import Pagination
+    from './components/Pagination';
+
+import './styles/course.css';
 
 function App() {
 
-  const [courses, setCourses] =
-      useState<Course[]>([]);
+    const [keyword, setKeyword] =
+        useState('');
 
-  const [error, setError] =
-      useState<string | null>(null);
+    const [page, setPage] =
+        useState(0);
 
-  useEffect(() => {
+    const {
+        courses,
+        totalPages,
+        state,
+        errorMessage,
+        refetch
 
-    getCourses()
-        .then((res) => {
+    } = useCourses(
+        keyword,
+        page
+    );
 
-          setCourses(
-              res.data.content
-          );
+    const handleSearch = (
+        newKeyword: string
+    ) => {
 
-        })
-        .catch((err) => {
+        setKeyword(newKeyword);
 
-          console.error(err);
+        setPage(0);
+    };
 
-          setError(
-              'Khong ket noi duoc toi he thong. Kiem tra lai api gateway da chay chua.'
-          );
+    return (
+        <div className="course-page">
 
-        });
+            <div className="course-container">
 
-  }, []);
+                <div className="course-header">
 
-  return (
-      <div
-          style={{
-            padding: 24,
-            fontFamily: 'sans-serif'
-          }}
-      >
+                    <h1 className="course-title">
+                        Danh sách môn học
+                    </h1>
 
-        <h1>
-          Kiem tra ket noi CRS qua Gateway
-        </h1>
+                    <p className="course-subtitle">
+                        Tìm kiếm và xem thông tin các môn học trong hệ thống CRS
+                    </p>
 
-        {error && (
-            <p style={{ color: 'red' }}>
-              {error}
-            </p>
-        )}
+                </div>
 
-        <pre>
-        {JSON.stringify(
-            courses,
-            null,
-            2
-        )}
-      </pre>
+                <SearchBox
+                    onSearch={handleSearch}
+                />
 
-      </div>
-  );
+                <CourseList
+                    courses={courses}
+                    state={state}
+                    errorMessage={errorMessage}
+                    onRetry={refetch}
+                />
+
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                />
+
+            </div>
+
+        </div>
+    );
 }
 
 export default App;

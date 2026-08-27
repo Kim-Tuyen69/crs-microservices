@@ -11,18 +11,25 @@ interface CourseListProps {
     state: LoadState;
     errorMessage: string;
     onRetry: () => void;
+
+    onEdit: (
+        course: Course
+    ) => void;
+
+    onDelete: (
+        course: Course
+    ) => void;
 }
 
 export default function CourseList({
                                        courses,
                                        state,
                                        errorMessage,
-                                       onRetry
+                                       onRetry,
+                                       onEdit,
+                                       onDelete
                                    }: CourseListProps) {
 
-    // =========================
-    // LOADING
-    // =========================
     if (state === 'loading') {
         return (
             <div className="status-box status-loading">
@@ -31,16 +38,11 @@ export default function CourseList({
         );
     }
 
-    // =========================
-    // ERROR
-    // =========================
     if (state === 'error') {
         return (
             <div className="status-box status-error">
 
-                <p>
-                    {errorMessage}
-                </p>
+                <p>{errorMessage}</p>
 
                 <button
                     className="retry-button"
@@ -53,9 +55,6 @@ export default function CourseList({
         );
     }
 
-    // =========================
-    // EMPTY
-    // =========================
     if (state === 'empty') {
         return (
             <div className="status-box status-empty">
@@ -64,9 +63,6 @@ export default function CourseList({
         );
     }
 
-    // =========================
-    // SUCCESS
-    // =========================
     return (
         <div className="course-table-wrapper">
 
@@ -75,16 +71,20 @@ export default function CourseList({
                 <thead>
                 <tr>
 
-                    <th className="course-column-name">
+                    <th>
                         Tên môn học
                     </th>
 
-                    <th className="course-column-credit">
+                    <th>
                         Số tín chỉ
                     </th>
 
-                    <th className="course-column-seat">
+                    <th>
                         Số chỗ còn lại
+                    </th>
+
+                    <th>
+                        Thao tác
                     </th>
 
                 </tr>
@@ -114,6 +114,28 @@ export default function CourseList({
                             {course.soChoConLai}
                             {' / '}
                             {course.soChoToiDa}
+                        </td>
+
+                        <td className="course-actions">
+
+                            <button
+                                className="edit-button"
+                                onClick={() =>
+                                    onEdit(course)
+                                }
+                            >
+                                Sửa
+                            </button>
+
+                            <button
+                                className="delete-button"
+                                onClick={() =>
+                                    onDelete(course)
+                                }
+                            >
+                                Xóa
+                            </button>
+
                         </td>
 
                     </tr>

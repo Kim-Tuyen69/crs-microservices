@@ -1,21 +1,90 @@
 import axios from 'axios';
 
-const axiosClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+const axiosClient =
+    axios.create({
 
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+        baseURL:
+        import.meta.env
+            .VITE_API_BASE_URL,
 
-axiosClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem('crs_token');
+        headers: {
+            'Content-Type':
+                'application/json'
+        }
+    });
 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
 
-    return config;
-});
+/*
+  REQUEST INTERCEPTOR
+
+  Gắn JWT vào request.
+*/
+axiosClient
+    .interceptors
+    .request
+    .use((config) => {
+
+        const token =
+            localStorage.getItem(
+                'crs_token'
+            );
+
+        if (token) {
+
+            config.headers.Authorization =
+                `Bearer ${token}`;
+        }
+
+        return config;
+    });
+
+
+/*
+  RESPONSE INTERCEPTOR
+
+  401
+  -> token hết hạn / sai
+  -> logout.
+*/
+axiosClient
+    .interceptors
+    .response
+    .use(
+
+        (response) =>
+            response,
+
+        (error) => {
+
+            if (
+                axios.isAxiosError(error)
+                &&
+                error.response?.status
+                === 401
+            ) {
+
+                localStorage.removeItem(
+                    'crs_token'
+                );
+
+                localStorage.removeItem(
+                    'crs_user'
+                );
+
+                if (
+                    window.location.pathname
+                    !== '/login'
+                ) {
+
+                    window.location.href =
+                        '/login';
+                }
+            }
+
+            return Promise.reject(
+                error
+            );
+        }
+    );
 
 export default axiosClient;

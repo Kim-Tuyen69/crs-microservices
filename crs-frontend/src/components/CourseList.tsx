@@ -1,10 +1,5 @@
-import type {
-    Course
-} from '../types/course';
-
-import type {
-    LoadState
-} from '../api/useCourses';
+import type { Course } from '../types/course';
+import type { LoadState } from '../api/useCourses';
 
 interface CourseListProps {
     courses: Course[];
@@ -12,13 +7,11 @@ interface CourseListProps {
     errorMessage: string;
     onRetry: () => void;
 
-    onEdit: (
-        course: Course
-    ) => void;
+    onEdit?: (course: Course) => void;
+    onDelete?: (course: Course) => void;
 
-    onDelete: (
-        course: Course
-    ) => void;
+    onRegister?: (course: Course) => void;
+    registeringId?: number | null;
 }
 
 export default function CourseList({
@@ -27,50 +20,63 @@ export default function CourseList({
                                        errorMessage,
                                        onRetry,
                                        onEdit,
-                                       onDelete
+                                       onDelete,
+                                       onRegister,
+                                       registeringId,
                                    }: CourseListProps) {
-
     if (state === 'loading') {
         return (
-            <div className="status-box status-loading">
-                Đang tải danh sách môn học...
+            <div className="load-state">
+                <p>
+                    Đang tải danh sách môn học...
+                </p>
             </div>
         );
     }
 
     if (state === 'error') {
         return (
-            <div className="status-box status-error">
-
+            <div className="load-state error-state">
                 <p>{errorMessage}</p>
 
                 <button
-                    className="retry-button"
+                    type="button"
                     onClick={onRetry}
+                    className="retry-button"
                 >
                     Thử lại
                 </button>
-
             </div>
         );
     }
 
     if (state === 'empty') {
         return (
-            <div className="status-box status-empty">
-                Không tìm thấy môn học nào phù hợp.
+            <div className="load-state">
+                <p>
+                    Không tìm thấy môn học nào
+                    phù hợp.
+                </p>
             </div>
         );
     }
 
+    const showActions =
+        !!onEdit ||
+        !!onDelete ||
+        !!onRegister;
+
     return (
         <div className="course-table-wrapper">
-
-            <table className="course-table">
-
+            <table
+                className={`course-table ${
+                    showActions
+                        ? 'has-actions'
+                        : 'public-table'
+                }`}
+            >
                 <thead>
                 <tr>
-
                     <th>
                         Tên môn học
                     </th>
@@ -83,69 +89,121 @@ export default function CourseList({
                         Số chỗ còn lại
                     </th>
 
-                    <th>
-                        Thao tác
-                    </th>
-
+                    {showActions && (
+                        <th>
+                            Thao tác
+                        </th>
+                    )}
                 </tr>
                 </thead>
 
                 <tbody>
+                {courses.map(
+                    (course) => {
+                        const isFull =
+                            course.soChoConLai === 0;
 
-                {courses.map((course) => (
+                        const isRegistering =
+                            registeringId ===
+                            course.id;
 
-                    <tr key={course.id}>
-
-                        <td className="course-name">
-                            {course.tenMonHoc}
-                        </td>
-
-                        <td className="course-credit">
-                            {course.soTinChi}
-                        </td>
-
-                        <td
-                            className={
-                                course.soChoConLai === 0
-                                    ? 'course-seat seat-full'
-                                    : 'course-seat seat-normal'
-                            }
-                        >
-                            {course.soChoConLai}
-                            {' / '}
-                            {course.soChoToiDa}
-                        </td>
-
-                        <td className="course-actions">
-
-                            <button
-                                className="edit-button"
-                                onClick={() =>
-                                    onEdit(course)
+                        return (
+                            <tr
+                                key={
+                                    course.id
                                 }
                             >
-                                Sửa
-                            </button>
+                                <td>
+                                    <strong>
+                                        {
+                                            course.tenMonHoc
+                                        }
+                                    </strong>
+                                </td>
 
-                            <button
-                                className="delete-button"
-                                onClick={() =>
-                                    onDelete(course)
-                                }
-                            >
-                                Xóa
-                            </button>
+                                <td>
+                                    {
+                                        course.soTinChi
+                                    }
+                                </td>
 
-                        </td>
+                                <td
+                                    className={
+                                        isFull
+                                            ? 'course-full'
+                                            : ''
+                                    }
+                                >
+                                    {
+                                        course.soChoConLai
+                                    }
+                                    {' / '}
+                                    {
+                                        course.soChoToiDa
+                                    }
+                                </td>
 
-                    </tr>
+                                {showActions && (
+                                    <td>
+                                        <div className="action-buttons">
+                                            {onEdit && (
+                                                <button
+                                                    type="button"
+                                                    className="edit-button"
+                                                    onClick={() =>
+                                                        onEdit(
+                                                            course
+                                                        )
+                                                    }
+                                                >
+                                                    Sửa
+                                                </button>
+                                            )}
 
-                ))}
+                                            {onDelete && (
+                                                <button
+                                                    type="button"
+                                                    className="delete-button"
+                                                    onClick={() =>
+                                                        onDelete(
+                                                            course
+                                                        )
+                                                    }
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
 
+                                            {onRegister && (
+                                                <button
+                                                    type="button"
+                                                    className="register-button"
+                                                    disabled={
+                                                        isFull ||
+                                                        isRegistering
+                                                    }
+                                                    onClick={() =>
+                                                        onRegister(
+                                                            course
+                                                        )
+                                                    }
+                                                >
+                                                    {isRegistering
+                                                        ? 'Đang đăng ký...'
+                                                        : isFull
+                                                            ? 'Hết chỗ'
+                                                            : 'Đăng ký'}
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                )}
+                            </tr>
+                        );
+                    }
+                )}
                 </tbody>
-
             </table>
-
         </div>
     );
 }

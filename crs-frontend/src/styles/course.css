@@ -664,3 +664,356 @@ body {
         font-size: 13px;
     }
 }
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    display: flex;
+    align-items: center;
+
+    gap: 24px;
+
+    padding: 14px 28px;
+
+    background: #ffffff;
+
+    border-bottom:
+            1px solid #e2e8f0;
+
+    box-shadow:
+            0 2px 10px
+            rgba(0, 0, 0, 0.04);
+}
+
+.navbar-brand {
+    font-size: 22px;
+    font-weight: 800;
+
+    color: #2563eb;
+}
+
+.navbar-links {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+.navbar a {
+    color: #475569;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    transition:
+            color 0.2s ease;
+}
+
+.navbar a:hover {
+    color: #2563eb;
+}
+
+.navbar-user {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-left: auto;
+
+    font-size: 14px;
+
+    color: #475569;
+}
+
+.role-badge {
+    display: inline-block;
+
+    margin-left: 4px;
+
+    padding: 4px 7px;
+
+    border-radius: 6px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.logout-button {
+    padding: 8px 12px;
+
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+
+    background: #fef2f2;
+
+    color: #dc2626;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background: #fee2e2;
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+.login-page {
+    min-height:
+            calc(100vh - 65px);
+
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: center;
+
+    padding: 70px 20px;
+
+    background: #f5f7fb;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+
+    padding: 32px;
+
+    background: #ffffff;
+
+    border:
+            1px solid #e2e8f0;
+
+    border-radius: 16px;
+
+    box-shadow:
+            0 12px 35px
+            rgba(0, 0, 0, 0.08);
+}
+
+.login-card h1 {
+    margin:
+            0 0 6px;
+
+    color: #1e3a8a;
+
+    font-size: 26px;
+}
+
+.login-subtitle {
+    margin:
+            0 0 26px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.login-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-bottom: 16px;
+}
+
+.login-group label {
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #334155;
+}
+
+.login-group input {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border:
+            1px solid #cbd5e1;
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #1f2937;
+
+    font-size: 14px;
+}
+
+.login-group input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+            0 0 0 3px
+            rgba(37, 99, 235, 0.1);
+}
+
+.login-error {
+    margin-bottom: 14px;
+
+    padding: 10px 12px;
+
+    background: #fef2f2;
+
+    border-radius: 8px;
+
+    color: #b91c1c;
+
+    font-size: 13px;
+}
+
+.login-button {
+    width: 100%;
+
+    padding: 11px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.login-button:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.login-button:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   MOBILE NAVBAR
+========================= */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-wrap: wrap;
+
+        padding:
+                12px 16px;
+    }
+
+    .navbar-links {
+        order: 3;
+
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+    .navbar-user {
+        margin-left: auto;
+    }
+}
+/* ============================= */
+/* LAB 09 - COURSE REGISTRATION  */
+/* ============================= */
+
+.register-button {
+    padding: 8px 14px;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    background: #f0fdf4;
+    color: #15803d;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.register-button:hover:not(:disabled) {
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.register-button:disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.course-full {
+    color: #dc2626 !important;
+    font-weight: 700;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.registration-table th:nth-child(1),
+.registration-table td:nth-child(1) {
+    width: 45%;
+}
+
+.registration-table th:nth-child(2),
+.registration-table td:nth-child(2) {
+    width: 35%;
+}
+
+.registration-table th:nth-child(3),
+.registration-table td:nth-child(3) {
+    width: 20%;
+}
+
+.public-table th:nth-child(1),
+.public-table td:nth-child(1) {
+    width: 50%;
+}
+
+.public-table th:nth-child(2),
+.public-table td:nth-child(2) {
+    width: 20%;
+}
+
+.public-table th:nth-child(3),
+.public-table td:nth-child(3) {
+    width: 30%;
+}
+
+@media (max-width: 768px) {
+    .registration-table {
+        min-width: 650px;
+    }
+
+    .action-buttons {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .action-buttons button {
+        width: 100%;
+    }
+}

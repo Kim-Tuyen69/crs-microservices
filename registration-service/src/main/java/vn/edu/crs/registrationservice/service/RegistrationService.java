@@ -1,15 +1,15 @@
 package vn.edu.crs.registrationservice.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import vn.edu.crs.registrationservice.client.CourseClient;
 import vn.edu.crs.registrationservice.dto.RegistrationRequestDTO;
 import vn.edu.crs.registrationservice.entity.Registration;
 import vn.edu.crs.registrationservice.repository.RegistrationRepository;
 
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -22,38 +22,30 @@ public class RegistrationService {
     private static final String DA_HUY =
             "DA_HUY";
 
-    private final RegistrationRepository
-            registrationRepository;
-
+    private final RegistrationRepository registrationRepository;
     private final CourseClient courseClient;
 
     public Registration register(
             RegistrationRequestDTO dto
     ) {
-
-        // Kiểm tra sinh viên đã đăng ký môn này chưa
-        if (
+        boolean alreadyRegistered =
                 registrationRepository
                         .existsByStudentIdAndCourseIdAndTrangThai(
                                 dto.getStudentId(),
                                 dto.getCourseId(),
                                 DA_DANG_KY
-                        )
-        ) {
+                        );
 
+        if (alreadyRegistered) {
             throw new IllegalStateException(
                     "Sinh vien da dang ky mon hoc nay roi"
             );
         }
 
-        // Bước 1:
-        // gọi course-service để trừ chỗ trước
         courseClient.reserveSeat(
                 dto.getCourseId()
         );
 
-        // Bước 2:
-        // chỉ lưu đăng ký nếu trừ chỗ thành công
         Registration registration =
                 new Registration();
 
@@ -78,36 +70,33 @@ public class RegistrationService {
         );
     }
 
-    public void cancel(Long registrationId) {
-
+    public void cancel(
+            Long registrationId
+    ) {
         Registration registration =
                 registrationRepository
                         .findById(registrationId)
-                        .orElseThrow(() ->
-                                new NoSuchElementException(
+                        .orElseThrow(
+                                () -> new NoSuchElementException(
                                         "Khong tim thay dang ky id = "
                                                 + registrationId
                                 )
                         );
 
-        // Nếu hủy rồi thì không hoàn chỗ lần nữa
         if (
                 DA_HUY.equals(
                         registration.getTrangThai()
                 )
         ) {
-
             throw new IllegalStateException(
                     "Dang ky nay da duoc huy truoc do"
             );
         }
 
-        // Hoàn chỗ bên course-service trước
         courseClient.releaseSeat(
                 registration.getCourseId()
         );
 
-        // Sau đó đổi trạng thái
         registration.setTrangThai(
                 DA_HUY
         );
@@ -115,5 +104,12 @@ public class RegistrationService {
         registrationRepository.save(
                 registration
         );
+    }
+
+    public List<Registration> getMyRegistrations(
+            Long studentId
+    ) {
+        return registrationRepository
+                .findByStudentId(studentId);
     }
 }

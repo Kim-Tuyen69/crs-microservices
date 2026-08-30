@@ -10,13 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
@@ -41,65 +38,68 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader =
                 request.getHeader("Authorization");
 
-        // Không có Bearer token
-        // -> chưa xác thực
-        // -> SecurityConfig sẽ quyết định request có được phép hay không
-        if (authHeader == null
-                || !authHeader.startsWith("Bearer ")) {
+        if (
+                authHeader != null
+                        &&
+                        authHeader.startsWith("Bearer ")
+        ) {
 
-            filterChain.doFilter(request, response);
-            return;
-        }
+            String token =
+                    authHeader.substring(7);
 
-        String token =
-                authHeader.substring(7);
+            try {
+                SecretKey key =
+                        Keys.hmacShaKeyFor(
+                                secret.getBytes(
+                                        StandardCharsets.UTF_8
+                                )
+                        );
 
-        try {
+                Claims claims =
+                        Jwts.parser()
+                                .verifyWith(key)
+                                .build()
+                                .parseSignedClaims(token)
+                                .getPayload();
 
-            SecretKey key =
-                    Keys.hmacShaKeyFor(
-                            secret.getBytes(
-                                    StandardCharsets.UTF_8
-                            )
-                    );
+                String username =
+                        claims.getSubject();
 
-            Claims claims =
-                    Jwts.parser()
-                            .verifyWith(key)
-                            .build()
-                            .parseSignedClaims(token)
-                            .getPayload();
+                String role =
+                        claims.get(
+                                "role",
+                                String.class
+                        );
 
-            String username =
-                    claims.getSubject();
+                Number userIdClaim =
+                        claims.get(
+                                "userId",
+                                Number.class
+                        );
 
-            String role =
-                    claims.get(
-                            "role",
-                            String.class
-                    );
+                Long userId =
+                        userIdClaim != null
+                                ? userIdClaim.longValue()
+                                : null;
 
-            var authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            List.of(
-                                    new SimpleGrantedAuthority(
-                                            "ROLE_" + role
-                                    )
-                            )
-                    );
+                var authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                userId,
+                                List.of(
+                                        new SimpleGrantedAuthority(
+                                                "ROLE_" + role
+                                        )
+                                )
+                        );
 
-            SecurityContextHolder
-                    .getContext()
-                    .setAuthentication(
-                            authentication
-                    );
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(authToken);
 
-        } catch (Exception e) {
-
-            // Token sai, hết hạn, chữ ký sai...
-            SecurityContextHolder.clearContext();
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(

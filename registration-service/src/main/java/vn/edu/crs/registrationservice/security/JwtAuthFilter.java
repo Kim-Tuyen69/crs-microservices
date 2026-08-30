@@ -10,13 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
@@ -26,8 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
-public class JwtAuthFilter
-        extends OncePerRequestFilter {
+public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Value("${jwt.secret}")
     private String secret;
@@ -40,70 +36,70 @@ public class JwtAuthFilter
     ) throws ServletException, IOException {
 
         String authHeader =
-                request.getHeader(
-                        "Authorization"
-                );
+                request.getHeader("Authorization");
 
-        if (authHeader == null
-                || !authHeader.startsWith("Bearer ")) {
+        if (
+                authHeader != null
+                        &&
+                        authHeader.startsWith("Bearer ")
+        ) {
 
-            filterChain.doFilter(
-                    request,
-                    response
-            );
+            String token =
+                    authHeader.substring(7);
 
-            return;
-        }
+            try {
+                SecretKey key =
+                        Keys.hmacShaKeyFor(
+                                secret.getBytes(
+                                        StandardCharsets.UTF_8
+                                )
+                        );
 
-        String token =
-                authHeader.substring(7);
+                Claims claims =
+                        Jwts.parser()
+                                .verifyWith(key)
+                                .build()
+                                .parseSignedClaims(token)
+                                .getPayload();
 
-        try {
+                String username =
+                        claims.getSubject();
 
-            SecretKey key =
-                    Keys.hmacShaKeyFor(
-                            secret.getBytes(
-                                    StandardCharsets.UTF_8
-                            )
-                    );
+                String role =
+                        claims.get(
+                                "role",
+                                String.class
+                        );
 
-            Claims claims =
-                    Jwts.parser()
-                            .verifyWith(key)
-                            .build()
-                            .parseSignedClaims(token)
-                            .getPayload();
+                Number userIdClaim =
+                        claims.get(
+                                "userId",
+                                Number.class
+                        );
 
-            String username =
-                    claims.getSubject();
+                Long userId =
+                        userIdClaim != null
+                                ? userIdClaim.longValue()
+                                : null;
 
-            String role =
-                    claims.get(
-                            "role",
-                            String.class
-                    );
+                var authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                userId,
+                                List.of(
+                                        new SimpleGrantedAuthority(
+                                                "ROLE_" + role
+                                        )
+                                )
+                        );
 
-            var authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            List.of(
-                                    new SimpleGrantedAuthority(
-                                            "ROLE_" + role
-                                    )
-                            )
-                    );
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(authToken);
 
-            SecurityContextHolder
-                    .getContext()
-                    .setAuthentication(
-                            authentication
-                    );
-
-        } catch (Exception e) {
-
-            SecurityContextHolder
-                    .clearContext();
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(

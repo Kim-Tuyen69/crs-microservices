@@ -30,6 +30,9 @@ import RegisterCoursePage
 import MyRegistrationsPage
     from './pages/MyRegistrationsPage';
 
+import ApiKeysPage
+    from './pages/ApiKeysPage';
+
 import './styles/course.css';
 
 function App() {
@@ -70,6 +73,17 @@ function App() {
                                 requiredRole="ADMIN"
                             >
                                 <AdminCoursesPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/api-keys"
+                        element={
+                            <ProtectedRoute
+                                requiredRole="ADMIN"
+                            >
+                                <ApiKeysPage />
                             </ProtectedRoute>
                         }
                     />

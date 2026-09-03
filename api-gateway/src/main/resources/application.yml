@@ -17,15 +17,24 @@ spring:
 
             # AUTH SERVICE
             - id: auth-service
-              uri: http://localhost:8081
+              uri: ${AUTH_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path=/api/auth/**
               filters:
                 - RewritePath=/api/auth/(?<segment>.*), /auth/${segment}
 
+            # API KEY MANAGEMENT - ADMIN
+            - id: auth-service-apikeys
+              uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/api-keys,/api/api-keys/**
+              filters:
+                - RewritePath=/api/api-keys/(?<segment>.*), /api-keys/${segment}
+                - RewritePath=/api/api-keys, /api-keys
+
             # COURSE SERVICE - LIST
             - id: course-service-list
-              uri: http://localhost:6905
+              uri: ${COURSE_SERVICE_URL:http://localhost:6905}
               predicates:
                 - Path=/api/courses
               filters:
@@ -33,7 +42,7 @@ spring:
 
             # COURSE SERVICE - DETAIL
             - id: course-service-detail
-              uri: http://localhost:6905
+              uri: ${COURSE_SERVICE_URL:http://localhost:6905}
               predicates:
                 - Path=/api/courses/**
               filters:
@@ -41,7 +50,7 @@ spring:
 
             # REGISTRATION SERVICE - LIST
             - id: registration-service-list
-              uri: http://localhost:8083
+              uri: ${REGISTRATION_SERVICE_URL:http://localhost:8083}
               predicates:
                 - Path=/api/registrations
               filters:
@@ -49,7 +58,7 @@ spring:
 
             # REGISTRATION SERVICE - DETAIL
             - id: registration-service-detail
-              uri: http://localhost:8083
+              uri: ${REGISTRATION_SERVICE_URL:http://localhost:8083}
               predicates:
                 - Path=/api/registrations/**
               filters:
@@ -57,7 +66,7 @@ spring:
 
             # PUBLIC COURSE FOR PARTNER
             - id: course-service-partner
-              uri: http://localhost:6905
+              uri: ${COURSE_SERVICE_URL:http://localhost:6905}
               predicates:
                 - Path=/api/public/courses
               filters:
@@ -93,9 +102,8 @@ spring:
 jwt:
   secret: CRS-Microservices-Secret-Key-Nam-3-Hoc-Ky-2026-Doi-Trong-Thuc-Te
 
-
-partner:
-  api-key: crs-partner-key-2026
+auth-service:
+  base-url: ${AUTH_SERVICE_URL:http://localhost:8081}
 
 
 management:

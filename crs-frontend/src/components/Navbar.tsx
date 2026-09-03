@@ -42,9 +42,15 @@ export default function Navbar() {
                 {isAuthenticated &&
                     user?.role ===
                     'ADMIN' && (
-                        <Link to="/admin/courses">
-                            Quản trị môn học
-                        </Link>
+                        <>
+                            <Link to="/admin/courses">
+                                Quản trị môn học
+                            </Link>
+
+                            <Link to="/admin/api-keys">
+                                Quản lý API Key
+                            </Link>
+                        </>
                     )}
 
                 {isAuthenticated &&
@@ -66,16 +72,16 @@ export default function Navbar() {
                 {isAuthenticated &&
                 user ? (
                     <>
-            <span>
-              Xin chào,{' '}
-                <strong>
-                {user.username}
-              </strong>
+                        <span>
+                            Xin chào,{' '}
+                            <strong>
+                                {user.username}
+                            </strong>
 
-              <span className="role-badge">
-                {user.role}
-              </span>
-            </span>
+                            <span className="role-badge">
+                                {user.role}
+                            </span>
+                        </span>
 
                         <button
                             type="button"

@@ -1,5 +1,9 @@
 package vn.edu.crs.authservice.config;
 
+import vn.edu.crs.authservice.security.JwtAuthFilter;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,13 +14,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -36,8 +43,24 @@ public class SecurityConfig {
                         )
                 )
 
-                .authorizeHttpRequests(auth ->
-                        auth.anyRequest().permitAll()
+                .authorizeHttpRequests(auth -> auth
+
+                        // Dang nhap van cong khai
+                        .requestMatchers("/auth/**").permitAll()
+
+                        // Endpoint noi bo cho api-gateway
+                        .requestMatchers("/internal/**").permitAll()
+
+                        // Quan ly API Key chi ADMIN duoc truy cap
+                        .requestMatchers("/api-keys/**").hasRole("ADMIN")
+
+                        // Cac endpoint khac phai dang nhap
+                        .anyRequest().authenticated()
+                )
+
+                .addFilterBefore(
+                        jwtAuthFilter,
+                        UsernamePasswordAuthenticationFilter.class
                 );
 
         return http.build();

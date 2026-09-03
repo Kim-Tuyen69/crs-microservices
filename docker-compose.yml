@@ -1,0 +1,153 @@
+services:
+
+  # =========================
+  # MYSQL - AUTH
+  # =========================
+  mysql-auth:
+    image: mysql:8.0
+    container_name: crs-mysql-auth
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: crs
+      MYSQL_PASSWORD: crs123
+    ports:
+      - "3307:3306"
+    volumes:
+      - auth_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # =========================
+  # MYSQL - COURSE
+  # =========================
+  mysql-course:
+    image: mysql:8.0
+    container_name: crs-mysql-course
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: course_db
+      MYSQL_USER: crs
+      MYSQL_PASSWORD: crs123
+    ports:
+      - "3308:3306"
+    volumes:
+      - course_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # =========================
+  # MYSQL - REGISTRATION
+  # =========================
+  mysql-registration:
+    image: mysql:8.0
+    container_name: crs-mysql-registration
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: registration_db
+      MYSQL_USER: crs
+      MYSQL_PASSWORD: crs123
+    ports:
+      - "3309:3306"
+    volumes:
+      - registration_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # =========================
+  # AUTH SERVICE
+  # =========================
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: crs-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      DB_URL: jdbc:mysql://mysql-auth:3306/auth_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+      DB_USERNAME: crs
+      DB_PASSWORD: crs123
+    depends_on:
+      mysql-auth:
+        condition: service_healthy
+
+  # =========================
+  # COURSE SERVICE
+  # =========================
+  course-service:
+    build:
+      context: ./course-service
+    container_name: crs-course-service
+    ports:
+      - "6905:6905"
+    environment:
+      DB_URL: jdbc:mysql://mysql-course:3306/course_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+      DB_USERNAME: crs
+      DB_PASSWORD: crs123
+    depends_on:
+      mysql-course:
+        condition: service_healthy
+
+  # =========================
+  # REGISTRATION SERVICE
+  # =========================
+  registration-service:
+    build:
+      context: ./registration-service
+    container_name: crs-registration-service
+    ports:
+      - "8083:8083"
+    environment:
+      DB_URL: jdbc:mysql://mysql-registration:3306/registration_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+      DB_USERNAME: crs
+      DB_PASSWORD: crs123
+      COURSE_SERVICE_URL: http://course-service:6905
+    depends_on:
+      mysql-registration:
+        condition: service_healthy
+      course-service:
+        condition: service_started
+
+  # =========================
+  # API GATEWAY
+  # =========================
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: crs-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8081
+      COURSE_SERVICE_URL: http://course-service:6905
+      REGISTRATION_SERVICE_URL: http://registration-service:8083
+    depends_on:
+      - auth-service
+      - course-service
+      - registration-service
+
+  # =========================
+  # FRONTEND
+  # =========================
+  crs-frontend:
+    build:
+      context: ./crs-frontend
+    container_name: crs-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api-gateway
+
+volumes:
+  auth_mysql_data:
+  course_mysql_data:
+  registration_mysql_data:
